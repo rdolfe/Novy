@@ -174,12 +174,7 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* Email affiché dans la bannière */}
-        <div style={{ position: 'absolute', bottom: 14, left: 16 }}>
-          <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.35)', background: 'rgba(0,0,0,0.3)', padding: '3px 10px', borderRadius: 99 }}>
-            {profile.email}
-          </span>
-        </div>
+        {/* Banner decorations only */}
       </div>
 
       {/* Card */}

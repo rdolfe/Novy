@@ -3,14 +3,6 @@ import PostModal from '../components/PostModal';
 import UserProfileModal from '../components/UserProfileModal';
 import { apiFeed, apiLikePost } from '../api';
 
-// ── Données Feed ──────────────────────────────────────────
-const AVATARS = {
-  'Alex Dupont':   'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex&backgroundColor=b6e3f4',
-  'Emma Bernard':  'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma&backgroundColor=ffd5dc',
-  'Karim Ndiaye':  'https://api.dicebear.com/7.x/avataaars/svg?seed=Karim&backgroundColor=d1f4cc',
-  'Sophie Martin': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophie&backgroundColor=c0aede',
-};
-
 const STORIES = [
   { name: 'Alex',   seed: 'Alex',   bg: '#b6e3f4', hasUpdate: true  },
   { name: 'Emma',   seed: 'Emma',   bg: '#ffd5dc', hasUpdate: true  },
@@ -27,18 +19,21 @@ const initPosts = [
     time: 'Il y a 3h', likes: 47, comments: 12, liked: false,
     image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&q=80',
     tags: ['CTF', 'CyberSec'],
+    seed: 'Alex'
   },
   {
     id: 2, author: 'Emma Bernard', role: 'DevOps • Intervenante',
     content: '🎨 Besoin de retours sur mes maquettes Figma pour le projet Ynov ! L\'UX du dashboard a été entièrement repensée. Volontaires pour un test utilisateur ? 👇',
     time: 'Il y a 5h', likes: 31, comments: 8, liked: false,
     tags: ['UX', 'Figma', 'Design'],
+    seed: 'Emma'
   },
   {
     id: 3, author: 'Sophie Martin', role: 'IA & Data • B2',
     content: '🤖 Notre modèle de détection d\'anomalies atteint 94% de précision après fine-tuning sur les données du campus. Prochain step : déploiement sur les serveurs Ynov 🚀',
     time: 'Hier', likes: 89, comments: 21, liked: true,
     tags: ['IA', 'ML', 'Python'],
+    seed: 'Sophie'
   },
 ];
 
@@ -84,7 +79,7 @@ const PostCard = ({ post, onUserClick }) => {
     setTimeout(() => setAnim(false), 400);
   };
 
-  const avatar = AVATARS[post.author] || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.author}&backgroundColor=b6e3f4`;
+  const avatar = post.authorAvatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${post.seed || post.author || 'Novy'}&backgroundColor=b6e3f4`;
 
   return (
     <div className="fade-up" style={{
@@ -357,8 +352,8 @@ const Feed = () => {
             onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(124,58,237,0.15)'}
           >
             <div style={{ padding: 2, borderRadius: '50%', background: 'conic-gradient(#7c3aed, #d946ef, #06b6d4, #7c3aed)' }}>
-              <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.name || 'Novy'}&backgroundColor=b6e3f4`}
-                alt="me" style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid #0d0e12', display: 'block' }} />
+              <img src={currentUser?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.avatarSeed || currentUser?.name || 'Novy'}&backgroundColor=b6e3f4`}
+                alt="me" style={{ width: 36, height: 36, borderRadius: '50%', border: '2px solid #0d0e12', display: 'block', objectFit: 'cover' }} />
             </div>
             <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.9rem', flex: 1 }}>
               Quoi de neuf sur le campus ? ✨
@@ -381,7 +376,7 @@ const Feed = () => {
                   <PostCard 
                     post={p} 
                     onLikeApi={handleLikeFromFeed} 
-                    onUserClick={(post) => setProfileUser({ id: post.userId || Date.now(), name: post.author, role: post.role, seed: post.seed })}
+                    onUserClick={(post) => setProfileUser({ id: post.userId || Date.now(), name: post.author, role: post.role, seed: post.seed, avatarUrl: post.authorAvatar })}
                   />
                 </div>
               ))}

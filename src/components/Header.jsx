@@ -1,11 +1,11 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const navLinks = [
-  { to: '/feed',     icon: '◈', label: 'Fil' },
-  { to: '/news',     icon: '📣', label: 'News' },
+  { to: '/feed', icon: '◈', label: 'Fil' },
+  { to: '/news', icon: '📣', label: 'News' },
   { to: '/messages', icon: '💬', label: 'Messages' },
-  { to: '/jobs',     icon: '💼', label: 'Jobs' },
-  { to: '/chatbot',  icon: '🤖', label: 'IA' },
+  { to: '/jobs', icon: '💼', label: 'Jobs' },
+  { to: '/chatbot', icon: '🤖', label: 'IA' },
 ];
 
 const Header = () => {
@@ -29,25 +29,14 @@ const Header = () => {
     return (
       <header style={{
         position: 'sticky', top: 0, zIndex: 999,
-        padding: '0 2rem', height: 58,
+        padding: '0 2rem 0 1rem', height: 58,
         display: 'flex', alignItems: 'center',
         background: 'rgba(13,14,18,0.85)',
         backdropFilter: 'blur(20px)',
         borderBottom: '1px solid rgba(124,58,237,0.1)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 10,
-            background: 'linear-gradient(135deg, #7c3aed, #d946ef)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '1rem', fontWeight: 900, color: '#fff',
-            boxShadow: '0 0 16px rgba(124,58,237,0.5)',
-          }}>N</div>
-          <span style={{
-            fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.5px',
-            background: 'linear-gradient(135deg, #a78bfa, #f0abfc)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          }}>Novy</span>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img src="/logo_novy.png" alt="Novy Logo" style={{ height: 50, width: 'auto', display: 'block' }} />
         </div>
       </header>
     );
@@ -56,7 +45,7 @@ const Header = () => {
   return (
     <header style={{
       position: 'sticky', top: 0, zIndex: 999,
-      padding: '0 2rem', height: 58,
+      padding: '0 2rem 0 1rem', height: 58,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       background: 'rgba(13,14,18,0.85)',
       backdropFilter: 'blur(20px)',
@@ -65,19 +54,8 @@ const Header = () => {
       boxShadow: '0 1px 0 rgba(124,58,237,0.08)',
     }}>
       {/* Logo */}
-      <Link to="/feed" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 10,
-          background: 'linear-gradient(135deg, #7c3aed, #d946ef)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: '1rem', fontWeight: 900, color: '#fff',
-          boxShadow: '0 0 16px rgba(124,58,237,0.5)',
-        }}>N</div>
-        <span style={{
-          fontFamily: 'var(--font)', fontWeight: 800, fontSize: '1.15rem', letterSpacing: '-0.5px',
-          background: 'linear-gradient(135deg, #a78bfa, #f0abfc)',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-        }}>Novy</span>
+      <Link to="/feed" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+        <img src="/logo_novy.png" alt="Novy Logo" style={{ height: 50, width: 'auto', display: 'block' }} />
       </Link>
 
       {/* Nav — visible seulement si connecté */}
