@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
-import { apiMe, apiUpdateProfile } from '../api';
+import { useParams } from 'react-router-dom';
+import { apiMe, apiUser, apiUpdateProfile } from '../api';
 
 const SKILL_META = {
-  React:      { icon: '⚛️', color: '#61dafb' },
-  'Node.js':  { icon: '🟢', color: '#68a063' },
-  Python:     { icon: '🐍', color: '#3572a5' },
-  Docker:     { icon: '🐳', color: '#2496ed' },
-  Figma:      { icon: '🎨', color: '#f24e1e' },
-  SQL:        { icon: '🗃️', color: '#336791' },
-  CyberSec:   { icon: '🔐', color: '#ef4444' },
-  TypeScript: { icon: '🔷', color: '#3178c6' },
-  'C++':      { icon: '⚙️', color: '#a8b9cc' },
-  Java:       { icon: '☕', color: '#f89820' },
+  React:          { icon: '⚛️', color: '#61dafb' },
+  'Node.js':      { icon: '🟢', color: '#68a063' },
+  Python:         { icon: '🐍', color: '#3572a5' },
+  Docker:         { icon: '🐳', color: '#2496ed' },
+  Figma:          { icon: '🎨', color: '#f24e1e' },
+  SQL:            { icon: '🗃️', color: '#336791' },
+  CyberSec:       { icon: '🔐', color: '#ef4444' },
+  TypeScript:     { icon: '🔷', color: '#3178c6' },
+  'Audio Visuel': { icon: '🎥', color: '#ff0055' },
+  'Marketing Tech': { icon: '📈', color: '#00cc88' },
+  Business:       { icon: '💼', color: '#ffa500' },
 };
 const ALL_SKILLS = Object.keys(SKILL_META);
 
@@ -22,36 +24,57 @@ const BADGES = [
 ];
 
 const Profile = () => {
+  const { id } = useParams();
   const [edit, setEdit] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState('');
   const [profile, setProfile] = useState(null);
   const [draft, setDraft] = useState(null);
 
-  // ─── Chargement des données réelles depuis la BDD ───────
+  const me = (() => { try { return JSON.parse(localStorage.getItem('novy_user')); } catch { return null; } })();
+  
+  // Si pas d'ID en URL, c'est forcement "moi". Si ID present, on compare.
+  const isMe = !id || (me && Number(id) === Number(me.id));
+
   useEffect(() => {
     const loadProfile = async () => {
+      setLoading(true);
+      setError(null);
       try {
-        // 1. Charge immédiatement depuis localStorage (pas de flash)
-        const cached = JSON.parse(localStorage.getItem('novy_user') || '{}');
-        if (cached?.name) {
-          setProfile({ ...cached, skills: cached.skills || [] });
+        if (isMe) {
+          // 1. Essayer le cache pour soi-même
+          const cached = JSON.parse(localStorage.getItem('novy_user') || '{}');
+          if (cached?.name) {
+            setProfile({ ...cached, skills: cached.skills || [] });
+          }
+          // 2. Refresh API
+          const data = await apiMe();
+          if (data?.user) {
+            const user = { ...data.user, skills: data.user.skills || [] };
+            setProfile(user);
+            localStorage.setItem('novy_user', JSON.stringify(user));
+          }
+        } else {
+          // 3. Autre utilisateur
+          const data = await apiUser(id);
+          if (data?.user) {
+            setProfile({ ...data.user, skills: data.user.skills || [] });
+          } else {
+            throw new Error('Utilisateur non trouvé');
+          }
         }
-        // 2. Rafraîchit depuis l'API (données à jour)
-        const data = await apiMe();
-        const user = { ...data.user, skills: data.user.skills || [] };
-        setProfile(user);
-        // Met à jour le cache localStorage
-        localStorage.setItem('novy_user', JSON.stringify(user));
       } catch (err) {
-        console.error('[Profile] Erreur chargement:', err);
+        console.error('[Profile] Erreur:', err);
+        setError(err.message || 'Impossible de charger le profil');
       } finally {
         setLoading(false);
       }
     };
     loadProfile();
-  }, []);
+  }, [id, isMe]);
+
 
   const startEdit = () => {
     setDraft({ ...profile });
@@ -73,6 +96,7 @@ const Profile = () => {
         name:   draft.name,
         role:   draft.role,
         bio:    draft.bio,
+        avatarUrl: draft.avatarUrl,
         skills: draft.skills,
       });
       const updated = { ...data.user, skills: data.user.skills || draft.skills };
@@ -107,11 +131,23 @@ const Profile = () => {
     </div>
   );
 
+  if (error) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+      <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>
+        <div style={{ fontSize: '2rem', marginBottom: 12 }}>🚫</div>
+        <p style={{ color: '#fca5a5', marginBottom: 15 }}>{error}</p>
+        <button onClick={() => window.location.href = '/feed'} className="btn btn-ghost" style={{ fontSize: '0.85rem' }}>
+          Retour au fil d'actualité
+        </button>
+      </div>
+    </div>
+  );
+
   if (!profile) return null;
 
   const cur = edit ? draft : profile;
   const avatarSeed = profile.avatarSeed || profile.name?.replace(' ', '') || 'Novy';
-  const avatarUrl  = `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}&backgroundColor=b6e3f4`;
+  const avatarUrl  = profile.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${avatarSeed}&backgroundColor=b6e3f4`;
 
   return (
     <div style={{ maxWidth: 700, margin: '0 auto', padding: '1.5rem 1rem 2rem' }}>
@@ -159,19 +195,28 @@ const Profile = () => {
           <div style={{ marginTop: -52 }}>
             <div style={{ padding: 3, background: 'conic-gradient(#7c3aed, #d946ef, #06b6d4, #7c3aed)', borderRadius: '50%', display: 'inline-block' }}>
               <img src={avatarUrl} alt="avatar"
-                style={{ width: 90, height: 90, borderRadius: '50%', border: '3px solid var(--bg-800)', display: 'block' }} />
+                style={{ width: 90, height: 90, borderRadius: '50%', border: '3px solid var(--bg-800)', display: 'block', objectFit: 'cover' }} />
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, paddingTop: '0.5rem' }}>
             {saveMsg && <span style={{ fontSize: '0.82rem', color: saveMsg.startsWith('✅') ? 'var(--novy-green)' : '#fca5a5' }}>{saveMsg}</span>}
-            <button onClick={edit ? save : startEdit}
-              className="btn btn-brand" style={{ fontSize: '0.85rem', padding: '0.45rem 1.1rem', opacity: saving ? 0.7 : 1 }}
-              disabled={saving}>
-              {saving ? '⏳ Sauvegarde…' : edit ? '✓ Sauvegarder' : '✏️ Modifier'}
-            </button>
-            {edit && (
-              <button onClick={cancelEdit} className="btn btn-ghost" style={{ fontSize: '0.85rem', padding: '0.45rem 0.9rem' }}>
-                Annuler
+            {isMe && (
+              <>
+                <button onClick={edit ? save : startEdit}
+                  className="btn btn-brand" style={{ fontSize: '0.85rem', padding: '0.45rem 1.1rem', opacity: saving ? 0.7 : 1 }}
+                  disabled={saving}>
+                  {saving ? '⏳ Sauvegarde…' : edit ? '✓ Sauvegarder' : '✏️ Modifier'}
+                </button>
+                {edit && (
+                  <button onClick={cancelEdit} className="btn btn-ghost" style={{ fontSize: '0.85rem', padding: '0.45rem 0.9rem' }}>
+                    Annuler
+                  </button>
+                )}
+              </>
+            )}
+            {!isMe && (
+              <button className="btn btn-brand" style={{ fontSize: '0.85rem', padding: '0.45rem 1.1rem' }}>
+                🤝 Suivre
               </button>
             )}
           </div>
@@ -180,6 +225,11 @@ const Profile = () => {
         {/* Nom & rôle */}
         {edit ? (
           <>
+            <div style={{ marginBottom: 15 }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', fontWeight: 700, marginBottom: 6 }}>Lien de ta photo de profil (URL)</label>
+              <input className="input" value={draft.avatarUrl || ''} onChange={e => setDraft({ ...draft, avatarUrl: e.target.value })}
+                placeholder="https://images.com/ma-photo.jpg" />
+            </div>
             <input className="input" value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })}
               style={{ fontWeight: 700, fontSize: '1.2rem', marginBottom: 8 }} placeholder="Ton prénom et nom" />
             <input className="input" value={draft.role || ''} onChange={e => setDraft({ ...draft, role: e.target.value })}
@@ -223,8 +273,8 @@ const Profile = () => {
             Compétences {edit && <span style={{ color: 'rgba(255,255,255,0.2)', fontWeight: 400, fontSize: '0.7rem', textTransform: 'none' }}>— clique pour ajouter/retirer</span>}
           </h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {ALL_SKILLS.map(s => {
-              const meta   = SKILL_META[s];
+            {(edit ? ALL_SKILLS : (cur.skills || [])).map(s => {
+              const meta   = SKILL_META[s] || { icon: '🎯', color: '#fff' };
               const active = cur.skills?.includes(s);
               return (
                 <button key={s} onClick={() => edit && toggleSkill(s)} style={{
@@ -242,6 +292,11 @@ const Profile = () => {
                 </button>
               );
             })}
+            {!edit && (!cur.skills || cur.skills.length === 0) && (
+              <p style={{ fontSize: '0.88rem', color: 'rgba(255,255,255,0.25)', fontStyle: 'italic' }}>
+                Aucune compétence sélectionnée.
+              </p>
+            )}
           </div>
         </div>
 

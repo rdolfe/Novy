@@ -27,6 +27,7 @@ async function request(method, path, body) {
 export const apiLogin          = (body) => request('POST',  '/auth/login',    body);
 export const apiRegister       = (body) => request('POST',  '/auth/register', body);
 export const apiMe             = ()     => request('GET',   '/auth/me');
+export const apiUser           = (id)   => request('GET',   `/auth/profile/${id}`);
 export const apiUpdateProfile  = (body) => request('PATCH', '/auth/profile',  body);
 
 // ── Posts ─────────────────────────────────────────────────

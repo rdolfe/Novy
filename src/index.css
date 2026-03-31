@@ -216,7 +216,7 @@ body {
   background: conic-gradient(var(--novy-violet), var(--novy-pink), var(--novy-cyan), var(--novy-violet));
   border-radius: 50%;
   padding: 2.5px;
-  animation: spin-slow 4s linear infinite;
+  /* animation: spin-slow 4s linear infinite; */
 }
 .story-ring .avatar { border: 2.5px solid var(--bg-900); }
 

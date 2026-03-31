@@ -12,7 +12,7 @@ const UserProfileModal = ({ user, isOpen, onClose }) => {
   };
 
   const getAvatar = () =>
-    `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.seed || user.avatarSeed || user.name}&backgroundColor=b6e3f4`;
+    user.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.seed || user.avatarSeed || user.name}&backgroundColor=b6e3f4`;
 
   return (
     <div style={{
@@ -76,17 +76,37 @@ const UserProfileModal = ({ user, isOpen, onClose }) => {
           </p>
 
           <div style={{ display: 'flex', gap: 10 }}>
-            {/* If it's not the current user, show message button */}
-            {user.id !== JSON.parse(localStorage.getItem('novy_user'))?.id && (
+            {/* If it's not the current user, show message button and profile button */}
+            {user.id !== JSON.parse(localStorage.getItem('novy_user'))?.id ? (
+              <>
+                <button 
+                  onClick={() => { navigate(`/profile/${user.id}`); onClose(); }}
+                  className="btn btn-ghost"
+                  style={{
+                    flex: 1, padding: '0.75rem', borderRadius: 'var(--radius-full)',
+                    fontSize: '0.9rem', border: '1px solid rgba(255,255,255,0.1)'
+                  }}
+                >
+                  👤 Voir le profil
+                </button>
+                <button 
+                  onClick={handleMessageClick}
+                  className="btn btn-brand" 
+                  style={{
+                    flex: 1, padding: '0.75rem', borderRadius: 'var(--radius-full)',
+                    fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6
+                  }}
+                >
+                  <span>💬</span> Message
+                </button>
+              </>
+            ) : (
               <button 
-                onClick={handleMessageClick}
-                className="btn btn-brand" 
-                style={{
-                  flex: 1, padding: '0.75rem', borderRadius: 'var(--radius-full)',
-                  fontSize: '0.95rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8
-                }}
+                onClick={() => { navigate('/profile'); onClose(); }}
+                className="btn btn-brand"
+                style={{ flex: 1, padding: '0.75rem', borderRadius: 'var(--radius-full)' }}
               >
-                <span>💬</span> Envoyer un message
+                👤 Mon Profil
               </button>
             )}
           </div>

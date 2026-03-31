@@ -56,7 +56,7 @@ const JobBoard = () => (
           Offres sélectionnées pour les étudiants Paris Ynov — mises à jour en temps réel
         </p>
       </div>
-      <a href="https://www.ymatch.fr" target="_blank" rel="noopener noreferrer"
+      <a href="https://ymatch.ynov.com/" target="_blank" rel="noopener noreferrer"
         className="btn btn-brand" style={{ textDecoration: 'none', fontSize: '0.9rem' }}>
         ✦ Toutes les offres →
       </a>

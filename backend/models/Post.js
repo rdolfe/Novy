@@ -14,6 +14,7 @@ class Post {
     this.author    = row.author_name;
     this.role      = row.author_role;
     this.avatarSeed= row.avatar_seed;
+    this.avatarUrl = row.author_avatar;
     this.tags      = row.tags ? row.tags.split(',').filter(Boolean) : [];
     this.liked     = !!(row.liked);
     this.createdAt = row.created_at;
@@ -27,6 +28,7 @@ class Post {
         u.name  AS author_name,
         u.role  AS author_role,
         u.avatar_seed,
+        u.avatar_url AS author_avatar,
         (SELECT COUNT(*) FROM post_likes WHERE post_id = p.id) AS likes,
         (SELECT COUNT(*) FROM comments   WHERE post_id = p.id) AS comments,
         GROUP_CONCAT(DISTINCT pt.tag_name) AS tags,
@@ -59,7 +61,7 @@ class Post {
     // Award XP
     await pool.query('UPDATE users SET xp = LEAST(xp + 5, 100) WHERE id = ?', [userId]);
     const [rows] = await pool.query(`
-      SELECT p.*, u.name AS author_name, u.role AS author_role, u.avatar_seed,
+      SELECT p.*, u.name AS author_name, u.role AS author_role, u.avatar_seed, u.avatar_url AS author_avatar,
              0 AS likes, 0 AS comments, NULL AS tags, 0 AS liked
       FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?
     `, [postId]);
@@ -100,7 +102,8 @@ class Post {
       id: this.id, userId: this.userId, content: this.content,
       imageUrl: this.imageUrl, likes: this.likes, comments: this.comments,
       author: this.author, role: this.role, avatarSeed: this.avatarSeed,
-      tags: this.tags, liked: this.liked, createdAt: this.createdAt,
+      avatarUrl: this.avatarUrl, tags: this.tags, liked: this.liked,
+      createdAt: this.createdAt,
     };
   }
 }

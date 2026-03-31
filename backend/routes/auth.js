@@ -103,14 +103,14 @@ router.patch('/profile', async (req, res) => {
       return res.status(401).json({ error: 'Token manquant.' });
 
     const payload = jwt.verify(auth.slice(7), SECRET);
-    const { name, role, bio, skills = [] } = req.body;
+    const { name, role, bio, avatarUrl, skills = [] } = req.body;
 
     const pool = require('../config/db');
 
     // Mise à jour des infos de base
     await pool.query(
-      'UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role), bio = COALESCE(?, bio) WHERE id = ?',
-      [name || null, role || null, bio !== undefined ? bio : null, payload.id]
+      'UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role), bio = COALESCE(?, bio), avatar_url = ? WHERE id = ?',
+      [name || null, role || null, bio !== undefined ? bio : null, avatarUrl || null, payload.id]
     );
 
     // Mise à jour des compétences
@@ -122,7 +122,7 @@ router.patch('/profile', async (req, res) => {
       }
     }
 
-    // Retourne l'utilisateur mis à jour
+    // Retourne l'utilisateur mis à jour via l'objet User pour cohérence
     const user = await User.findById(payload.id);
     const updatedSkills = await user.getSkills();
     const userData = { ...user.toJSON(), skills: updatedSkills };
@@ -134,6 +134,21 @@ router.patch('/profile', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur.' });
   }
 });
+
+// ── GET /api/auth/profile/:id ─────────────────────────────
+router.get('/profile/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'Utilisateur introuvable.' });
+
+    const skills = await user.getSkills();
+    res.json({ user: { ...user.toJSON(), skills } });
+  } catch (err) {
+    console.error('[auth/profile/:id GET]', err);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
 
 module.exports = router;
 

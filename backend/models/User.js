@@ -12,6 +12,7 @@ class User {
     this.role      = row.role;
     this.bio       = row.bio;
     this.avatarSeed= row.avatar_seed;
+    this.avatarUrl = row.avatar_url;
     this.xp        = row.xp;
     this.createdAt = row.created_at;
   }
@@ -59,10 +60,10 @@ class User {
   }
 
   // ── Instance: Update profile ───────────────────────────────
-  async update({ name, role, bio }) {
+  async update({ name, role, bio, avatarUrl }) {
     await pool.query(
-      'UPDATE users SET name = ?, role = ?, bio = ? WHERE id = ?',
-      [name || this.name, role || this.role, bio ?? this.bio, this.id]
+      'UPDATE users SET name = ?, role = ?, bio = ?, avatar_url = ? WHERE id = ?',
+      [name || this.name, role || this.role, bio ?? this.bio, avatarUrl ?? this.avatarUrl, this.id]
     );
     return User.findById(this.id);
   }
@@ -76,6 +77,7 @@ class User {
       role:      this.role,
       bio:       this.bio,
       avatarSeed:this.avatarSeed,
+      avatarUrl: this.avatarUrl,
       xp:        this.xp,
       createdAt: this.createdAt,
     };

@@ -289,18 +289,19 @@ const Feed = () => {
         const data = await apiFeed();
         // data est un tableau de posts du backend
         setPosts(data.map(p => ({
-          id:       p.id,
-          author:   p.authorName || p.author || 'Anonyme',
-          userId:   p.userId     || null,
-          role:     p.authorRole || p.role   || 'Étudiant Ynov',
-          content:  p.content,
-          time:     p.time || new Date(p.createdAt || p.created_at).toLocaleDateString('fr-FR'),
-          likes:    p.likesCount  ?? p.likes    ?? 0,
-          comments: p.commentsCount ?? p.comments ?? 0,
-          liked:    p.likedByMe   ?? p.liked    ?? false,
-          image:    p.imageUrl    ?? p.image    ?? null,
-          tags:     p.tags        || [],
-          seed:     p.authorSeed  || p.author,
+          id:           p.id,
+          author:       p.authorName || p.author || 'Anonyme',
+          userId:       p.userId     || null,
+          role:         p.authorRole || p.role   || 'Étudiant Ynov',
+          content:      p.content,
+          time:         p.time || new Date(p.createdAt || p.created_at).toLocaleDateString('fr-FR'),
+          likes:        p.likesCount  ?? p.likes    ?? 0,
+          comments:     p.commentsCount ?? p.comments ?? 0,
+          liked:        p.likedByMe   ?? p.liked    ?? false,
+          image:        p.imageUrl    ?? p.image    ?? null,
+          tags:         p.tags        || [],
+          authorAvatar: p.avatarUrl   || null,
+          seed:         p.authorSeed  || p.author,
         })));
       } catch (err) {
         console.warn('[Feed] Erreur API, données offline:', err.message);
@@ -335,7 +336,6 @@ const Feed = () => {
                 <div style={{
                   padding: 2.5, borderRadius: '50%',
                   background: s.hasUpdate ? 'conic-gradient(#7c3aed, #d946ef, #06b6d4, #7c3aed)' : 'var(--bg-600)',
-                  animation: s.hasUpdate ? 'spin-slow 4s linear infinite' : 'none',
                 }}>
                   <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${s.seed}&backgroundColor=${s.bg.slice(1)}`}
                     alt={s.name} style={{ width: 52, height: 52, borderRadius: '50%', border: '2.5px solid #0d0e12', display: 'block' }} />
@@ -407,6 +407,7 @@ const Feed = () => {
           const normalized = {
             id:       p.id || Date.now(),
             author:   p.authorName || currentUser?.name || 'Moi',
+            userId:   p.userId     || currentUser?.id   || null,
             role:     p.authorRole || currentUser?.role  || 'Étudiant Ynov',
             content:  p.content,
             time:     'À l\'instant',
@@ -415,7 +416,8 @@ const Feed = () => {
             liked:    false,
             image:    p.imageUrl || null,
             tags:     p.tags     || [],
-            seed:     currentUser?.name || 'Novy',
+            authorAvatar: currentUser?.avatarUrl || null,
+            seed:     currentUser?.avatarSeed || currentUser?.name || 'Novy'
           };
           setPosts(prev => [normalized, ...prev]);
           setModalOpen(false);

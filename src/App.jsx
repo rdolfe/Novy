@@ -22,6 +22,7 @@ function App() {
           {/* Protected routes — require JWT token */}
           <Route path="/feed"     element={<PrivateRoute><Feed /></PrivateRoute>} />
           <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/profile/:id" element={<PrivateRoute><Profile /></PrivateRoute>} />
           <Route path="/jobs"     element={<PrivateRoute><JobBoard /></PrivateRoute>} />
           <Route path="/news"     element={<PrivateRoute><News /></PrivateRoute>} />
           <Route path="/messages" element={<PrivateRoute><Messaging /></PrivateRoute>} />

@@ -18,6 +18,12 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '10mb' }));
 
+// ── Debug Logger ──────────────────────────────────────────
+app.use((req, res, next) => {
+  console.log(`[${new Date().toLocaleTimeString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 // ── Routes ────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/posts', require('./routes/posts'));

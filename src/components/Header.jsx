@@ -125,9 +125,9 @@ const Header = () => {
               borderRadius: '50%',
             }}>
               <img
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.avatarSeed || 'Novy'}&backgroundColor=b6e3f4`}
+                src={user?.avatarUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.avatarSeed || 'Novy'}&backgroundColor=b6e3f4`}
                 alt="avatar"
-                style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #0d0e12', display: 'block' }}
+                style={{ width: 32, height: 32, borderRadius: '50%', border: '2px solid #0d0e12', display: 'block', objectFit: 'cover' }}
               />
             </div>
           </Link>
