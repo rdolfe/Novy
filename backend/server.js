@@ -1,11 +1,11 @@
 require('dotenv').config();
-const express  = require('express');
-const cors     = require('cors');
-const helmet   = require('helmet');
-const pool     = require('./config/db');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const pool = require('./config/db');
 
 // ── Express App ───────────────────────────────────────────
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ── Middleware ────────────────────────────────────────────
@@ -19,11 +19,11 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 
 // ── Routes ────────────────────────────────────────────────
-app.use('/api/auth',     require('./routes/auth'));
-app.use('/api/posts',    require('./routes/posts'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/posts', require('./routes/posts'));
 app.use('/api/messages', require('./routes/messages'));
-app.use('/api/news',     require('./routes/news'));
-app.use('/api/ai',       require('./routes/ai'));
+app.use('/api/news', require('./routes/news'));
+app.use('/api/ai', require('./routes/ai'));
 
 // ── Health check ─────────────────────────────────────────
 app.get('/health', async (_req, res) => {

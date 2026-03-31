@@ -1,0 +1,79 @@
+# Guide d'installation du projet
+
+Bienvenue ! Voici un guide simple pour faire fonctionner ce projet sur ton ordinateur. Suis chaque étape comme un jeu de construction !
+
+---
+
+## 1. Installer les programmes nécessaires
+
+Avant tout, il te faut installer quelques outils :
+
+- **Node.js** (pour faire tourner le site) :
+  - Va sur https://nodejs.org/ et télécharge la version recommandée.
+- **Git** (pour récupérer le projet) :
+  - Va sur https://git-scm.com/ et installe-le.
+
+---
+
+## 2. Récupérer le projet
+
+Ouvre un terminal (ou PowerShell sur Windows) et tape :
+
+    git pull
+
+(si tu n'as pas encore le dossier, utilise `git clone [lien du projet]`)
+
+---
+
+## 3. Installer les dépendances (les outils du projet)
+
+Dans le terminal, va dans le dossier du projet (remplace "Novy" si besoin) :
+
+    cd Documents\Novy
+
+Puis tape :
+
+    npm install
+
+Cela va installer tout ce qu'il faut pour que le projet fonctionne.
+
+---
+
+## 4. Lancer le projet
+
+Pour démarrer le site :
+
+    npm run dev
+
+Le site va s'ouvrir dans ton navigateur (garde le terminal ouvert !)
+
+---
+
+## 5. Lancer le backend (le serveur)
+
+Dans un autre terminal, va dans le dossier backend :
+
+    cd backend
+    node server.js
+
+---
+
+## 6. (Optionnel) Base de données
+
+Si tu dois importer la base de données, utilise le script dans le dossier `scripts/`.
+
+---
+
+## 7. Résumé
+
+1. Installe Node.js et Git
+2. Récupère le projet avec Git
+3. Installe les dépendances avec `npm install`
+4. Lance le site avec `npm run dev`
+5. Lance le backend avec `node backend/server.js`
+
+---
+
+Si tu as un problème, demande à un adulte ou cherche l'erreur sur internet !
+
+Bonne chance 🚀

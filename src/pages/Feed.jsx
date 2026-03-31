@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PostModal from '../components/PostModal';
+import UserProfileModal from '../components/UserProfileModal';
 import { apiFeed, apiLikePost } from '../api';
 
 // ── Données Feed ──────────────────────────────────────────
@@ -70,7 +71,7 @@ const NEWS_ITEMS = [
 ];
 
 // ── Composant PostCard ────────────────────────────────────
-const PostCard = ({ post }) => {
+const PostCard = ({ post, onUserClick }) => {
   const [liked, setLiked] = useState(post.liked);
   const [likes, setLikes] = useState(post.likes);
   const [anim, setAnim] = useState(false);
@@ -97,13 +98,18 @@ const PostCard = ({ post }) => {
       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 1.25rem 0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div 
+          onClick={() => onUserClick && onUserClick(post)}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', padding: '4px 8px', borderRadius: 'var(--radius-lg)', marginLeft: '-8px', transition: 'background 0.2s' }}
+          onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
+          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+        >
           <div className="story-ring" style={{ width: 44, height: 44 }}>
             <img src={avatar} alt={post.author} className="avatar" style={{ width: '100%', height: '100%' }} />
           </div>
           <div>
-            <p style={{ fontWeight: 700, fontSize: '0.95rem', color: '#fff' }}>{post.author}</p>
-            <p style={{ fontSize: '0.75rem', color: 'var(--novy-violet-light)', fontStyle: 'italic' }}>{post.role}</p>
+            <p style={{ fontWeight: 700, fontSize: '0.95rem', color: '#fff', margin: 0 }}>{post.author}</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--novy-violet-light)', fontStyle: 'italic', margin: 0 }}>{post.role}</p>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -266,9 +272,10 @@ const NewsSidebar = () => (
 
 // ── Page Feed ─────────────────────────────────────────────
 const Feed = () => {
-  const [posts, setPosts]       = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [posts, setPosts]             = useState([]);
+  const [modalOpen, setModalOpen]     = useState(false);
   const [loadingFeed, setLoadingFeed] = useState(true);
+  const [profileUser, setProfileUser] = useState(null);
 
   // Infos de l'utilisateur connecté
   const currentUser = (() => {
@@ -284,6 +291,7 @@ const Feed = () => {
         setPosts(data.map(p => ({
           id:       p.id,
           author:   p.authorName || p.author || 'Anonyme',
+          userId:   p.userId     || null,
           role:     p.authorRole || p.role   || 'Étudiant Ynov',
           content:  p.content,
           time:     p.time || new Date(p.createdAt || p.created_at).toLocaleDateString('fr-FR'),
@@ -370,7 +378,11 @@ const Feed = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {posts.map((p, i) => (
                 <div key={p.id} style={{ animationDelay: `${i * 0.06}s` }}>
-                  <PostCard post={p} onLikeApi={handleLikeFromFeed} />
+                  <PostCard 
+                    post={p} 
+                    onLikeApi={handleLikeFromFeed} 
+                    onUserClick={(post) => setProfileUser({ id: post.userId || Date.now(), name: post.author, role: post.role, seed: post.seed })}
+                  />
                 </div>
               ))}
               {posts.length === 0 && (
@@ -408,6 +420,12 @@ const Feed = () => {
           setPosts(prev => [normalized, ...prev]);
           setModalOpen(false);
         }}
+      />
+
+      <UserProfileModal 
+        user={profileUser}
+        isOpen={!!profileUser}
+        onClose={() => setProfileUser(null)}
       />
     </div>
   );

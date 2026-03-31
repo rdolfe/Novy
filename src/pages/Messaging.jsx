@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { apiConvList, apiConv, apiSendMsg } from '../api';
 
 const Messaging = () => {
+  const location = useLocation();
   const [contacts, setContacts]   = useState([]);
   const [selected, setSelected]   = useState(null);
   const [msgs, setMsgs]           = useState([]);
@@ -14,23 +16,44 @@ const Messaging = () => {
 
   // ── Charger la liste des conversations ──────────────────
   useEffect(() => {
+    const targetUser = location.state?.targetUser;
+
     apiConvList()
       .then(data => {
-        setContacts(data || []);
-        if (data?.length > 0) setSelected(data[0]);
+        let list = data || [];
+        
+        // Si on vient d'un clic de profil, s'assurer que l'utilisateur est dans la liste (même temporairement)
+        if (targetUser && !list.find(c => c.id === targetUser.id)) {
+          list = [targetUser, ...list];
+        }
+
+        setContacts(list);
+
+        // Sélectionner soit le targetUser, soit le premier de la liste
+        if (targetUser) {
+          setSelected(targetUser);
+        } else if (list.length > 0) {
+          setSelected(list[0]);
+        }
       })
       .catch(() => {
         // Fallback statique si pas de conversations en BDD
-        const fallback = [
+        let list = [
           { id: 1, name: 'Alex Dupont',   role: 'CyberSec B2',  avatarSeed: 'Alex',   bg: 'b6e3f4', online: true  },
           { id: 2, name: 'Emma Bernard',  role: 'DevOps',        avatarSeed: 'Emma',   bg: 'ffd5dc', online: true  },
           { id: 3, name: 'Karim Ndiaye',  role: 'Dev B1',        avatarSeed: 'Karim',  bg: 'd1f4cc', online: false },
           { id: 4, name: 'Sophie Martin', role: 'IA & Data B2',  avatarSeed: 'Sophie', bg: 'c0aede', online: true  },
         ];
-        setContacts(fallback);
-        setSelected(fallback[0]);
+        
+        if (targetUser && !list.find(c => c.id === targetUser.id)) {
+          list = [targetUser, ...list];
+        }
+
+        setContacts(list);
+        setSelected(targetUser || list[0]);
       });
-  }, []);
+  }, [location.state]);
+
 
   // ── Charger les messages de la conversation sélectionnée
   useEffect(() => {

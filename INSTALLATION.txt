@@ -1,0 +1,63 @@
+# Guide d'installation du projet Novy
+
+Bienvenue ! Voici un guide simple pour faire fonctionner ce projet sur ton ordinateur. Suis chaque étape précisément !
+
+---
+
+## 🚀 ÉTAPE CRUCIALE POUR LES COLLÈGUES
+Si tu as fait un `git pull` et que tu as des erreurs "Server Error" ou "Failed", regarde en priorité le fichier :
+👉 **[GUIDE_COLLEGUES.md](GUIDE_COLLEGUES.md)**
+
+---
+
+## 1. Pré-requis (Programmes nécessaires)
+- **Node.js** (v18 ou supérieur) : https://nodejs.org/
+- **Git** : https://git-scm.com/
+- **XAMPP** (pour MySQL) : https://www.apachefriends.org/fr/index.html
+
+---
+
+## 2. Récupérer et Installer
+Dans votre dossier projet (terminal) :
+```powershell
+git pull
+npm install
+```
+
+---
+
+## 3. Configuration de la Base de Données (XAMPP)
+1. Lancez **XAMPP Control Panel**.
+2. Démarrez **Apache** et **MySQL**.
+3. Importez les données :
+   - Allez dans `scripts/` et double-cliquez sur `import-db.bat`.
+   - *Optionnel : Si le script échoue, importez manuellement `db/schema.sql` via phpMyAdmin (http://localhost/phpmyadmin/).*
+
+---
+
+## 4. Fichier .env (Important !)
+Le fichier `.env` est ignoré par Git. Vous devez le créer manuellement à la racine du projet !
+Copiez le contenu d'exemple du fichier **GUIDE_COLLEGUES.md**.
+
+---
+
+## 5. Lancer le projet
+Il faut **deux** terminaux ouverts :
+
+1. **Terminal 1 (Frontend) :**
+   ```powershell
+   npm run dev
+   ```
+2. **Terminal 2 (Backend) :**
+   ```powershell
+   npm run backend
+   ```
+
+---
+
+## 🔍 Vérification
+- Le site est sur : http://localhost:5173
+- Le backend est sur : http://localhost:3001
+- Vérifiez le backend avec : http://localhost:3001/health
+
+Bonne chance ! 🚀
